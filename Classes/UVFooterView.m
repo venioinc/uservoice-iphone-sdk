@@ -53,19 +53,19 @@
         [theTableView setBackgroundView:nil];
 
     UIView *tableFooter = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 25)] autorelease];
-    UILabel *poweredBy = [[[UILabel alloc] initWithFrame:CGRectMake(30, 8, (screenWidth-80), 16)] autorelease];
-    poweredBy.text = NSLocalizedStringFromTable(@"Feedback powered by UserVoice", @"UserVoice", nil);
-    poweredBy.font = [UIFont systemFontOfSize:14.0];
-    poweredBy.textColor = [UVStyleSheet tableViewHeaderColor];
-    poweredBy.backgroundColor = [UIColor clearColor];
-    poweredBy.textAlignment = UITextAlignmentCenter;
-    [tableFooter addSubview:poweredBy];
+//    UILabel *poweredBy = [[[UILabel alloc] initWithFrame:CGRectMake(30, 8, (screenWidth-80), 16)] autorelease];
+//    poweredBy.text = NSLocalizedStringFromTable(@"Feedback powered by UserVoice", @"UserVoice", nil);
+//    poweredBy.font = [UIFont systemFontOfSize:14.0];
+//    poweredBy.textColor = [UVStyleSheet tableViewHeaderColor];
+//    poweredBy.backgroundColor = [UIColor clearColor];
+//    poweredBy.textAlignment = UITextAlignmentCenter;
+//    [tableFooter addSubview:poweredBy];
 
-    //TODO: make the info button light if the background color is dark
-    UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
-    infoButton.center = CGPointMake(screenWidth / 2 + 110, 14);
-    [infoButton addTarget:footer action:@selector(infoButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-    [tableFooter addSubview:infoButton];
+//    //TODO: make the info button light if the background color is dark
+//    UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeInfoDark];
+//    infoButton.center = CGPointMake(screenWidth / 2 + 110, 14);
+//    [infoButton addTarget:footer action:@selector(infoButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+//    [tableFooter addSubview:infoButton];
 
     theTableView.tableFooterView = tableFooter;
 
@@ -125,11 +125,11 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)theTableView {
-    return 1;
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)theTableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+    return 0;
 }
 
 #pragma mark ===== UITableViewDelegate Methods =====

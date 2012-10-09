@@ -48,6 +48,19 @@
     [self presentUserVoiceInterfaceForParentViewController:parentViewController andConfig:config];
 }
 
++ (UIViewController *)userVoiceInterfaceForConfig:(UVConfig *)config {
+    UIViewController *viewController;
+    if ([[UVSession currentSession] clientConfig])
+        viewController = [[[UVWelcomeViewController alloc] init] autorelease];
+    else
+        viewController = [[[UVRootViewController alloc] init] autorelease];
+
+    [UVSession currentSession].config = config;
+    [UVSession currentSession].isModal = YES;
+    
+    return viewController;
+}
+
 + (void)presentUserVoiceInterfaceForParentViewController:(UIViewController *)parentViewController andConfig:(UVConfig *)config {
     UIViewController *viewController;
     if ([[UVSession currentSession] clientConfig])
@@ -80,6 +93,7 @@
         [self presentUserVoiceController:viewController forParentViewController:parentViewController withConfig:config];
     }
 }
+
 
 static id<UVDelegate> userVoiceDelegate;
 + (void)setDelegate:(id<UVDelegate>)delegate {

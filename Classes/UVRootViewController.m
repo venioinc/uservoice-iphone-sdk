@@ -20,6 +20,9 @@
 #import "UVConfig.h"
 #import "NSError+UVExtras.h"
 #import "UVStyleSheet.h"
+#import "VenioActivityView.h"
+#import "ErrorHandler.h"
+#import "VNavigationController.h"
 #include <QuartzCore/QuartzCore.h>
 
 @implementation UVRootViewController
@@ -46,11 +49,13 @@
             [[UVSession currentSession].currentToken remove];
             [UVToken getRequestTokenWithDelegate:self];
         } else {
-            [[[[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"Error", @"UserVoice", nil)
-                                         message:NSLocalizedStringFromTable(@"This application didn't configure UserVoice properly", @"UserVoice", nil)
-                                        delegate:self
-                               cancelButtonTitle:nil
-                               otherButtonTitles:NSLocalizedStringFromTable(@"OK", @"UserVoice", nil), nil] autorelease] show];
+            ErrorHandler *handler = [[ErrorHandler alloc] init];
+            [handler handle:error superView:self.view];
+//            [[[[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"Error", @"UserVoice", nil)
+//                                         message:NSLocalizedStringFromTable(@"This application didn't configure UserVoice properly", @"UserVoice", nil)
+//                                        delegate:self
+//                               cancelButtonTitle:nil
+//                               otherButtonTitles:NSLocalizedStringFromTable(@"OK", @"UserVoice", nil), nil] autorelease] show];
         }
     } else {
         [super didReceiveError:error];
@@ -62,29 +67,31 @@
 }
 
 - (void)pushNextView {
+    [VenioActivityView removeViewAnimated:YES];
     UVSession *session = [UVSession currentSession];
     if ((![UVToken exists] || session.user) && session.clientConfig && [self.navigationController.viewControllers count] == 1) {
-        CATransition* transition = [CATransition animation];
-        transition.duration = 0.3;
-        transition.type = kCATransitionFade;
-        [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+//        CATransition* transition = [CATransition animation];
+//        transition.duration = 0.3;
+//        transition.type = kCATransitionFade;
+//        [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+
+        UIViewController *welcomeViewController = [[[UVWelcomeViewController alloc] init] autorelease];
+        welcomeViewController.navigationItem.leftBarButtonItem = self.navigationItem.leftBarButtonItem;
+        self.navigationController.navigationBarHidden = NO;
+
+        [((VNavigationController *)self.navigationController) setRootViewController:welcomeViewController];
+        
         if (self.viewToLoad == @"welcome") {
-            self.navigationController.navigationBarHidden = NO;
-            UVWelcomeViewController *welcomeView = [[UVWelcomeViewController alloc] init];
-            [self.navigationController pushViewController:welcomeView animated:NO];
-            [welcomeView release];
+            // do nothing
         } else if (self.viewToLoad == @"suggestions") {
-            self.navigationController.navigationBarHidden = NO;
-            UIViewController *welcomeViewController = [[[UVWelcomeViewController alloc] init] autorelease];
             UIViewController *suggestionListViewController = [[[UVSuggestionListViewController alloc] initWithForum:[UVSession currentSession].clientConfig.forum] autorelease];
-            NSArray *viewControllers = [NSArray arrayWithObjects:welcomeViewController, suggestionListViewController, nil];
-            [self.navigationController setViewControllers:viewControllers animated:NO];
+            
+            [self.navigationController pushViewController:suggestionListViewController animated:NO];
         } else if (self.viewToLoad == @"new_ticket") {
-            self.navigationController.navigationBarHidden = NO;
-            UIViewController *welcomeViewController = [[[UVWelcomeViewController alloc] init] autorelease];
+
             UIViewController *newTicketViewController = [[[UVNewTicketViewController alloc] init] autorelease];
-            NSArray *viewControllers = [NSArray arrayWithObjects:welcomeViewController, newTicketViewController, nil];
-            [self.navigationController setViewControllers:viewControllers animated:NO];
+
+            [self.navigationController pushViewController:newTicketViewController animated:NO];
         }
     }
 }
@@ -134,12 +141,12 @@
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
     [super loadView];
-    [self showExitButton];
+//    [self showExitButton];
 
     CGRect frame = [self contentFrame];
     UIView *contentView = [[UIView alloc] initWithFrame:frame];
     CGFloat screenWidth = [UVClientConfig getScreenWidth];
-    CGFloat screenHeight = [UVClientConfig getScreenHeight];
+//    CGFloat screenHeight = [UVClientConfig getScreenHeight];
 
 //    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         contentView.backgroundColor = [UVStyleSheet backgroundColor];
@@ -155,17 +162,18 @@
     [contentView addSubview:splashLabel2];
     [splashLabel2 release];
 
-    UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    if ([activity respondsToSelector:@selector(setColor:)]) {
-        [activity setColor:[UIColor grayColor]];
-    } else {
-        [activity release];
-        activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    }
-    activity.center = CGPointMake(screenWidth/2, (screenHeight/ 2) - 60);
-    [contentView addSubview:activity];
-    [activity startAnimating];
-    [activity release];
+//    UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+//    if ([activity respondsToSelector:@selector(setColor:)]) {
+//        [activity setColor:[UIColor grayColor]];
+//    } else {
+//        [activity release];
+//        activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+//    }
+//    activity.center = CGPointMake(screenWidth/2, (screenHeight/ 2) - 60);
+//    [contentView addSubview:activity];
+//    [activity startAnimating];
+//    [activity release];
+    [VenioActivityView activityViewForView:contentView];
 
     self.view = contentView;
     [contentView release];
@@ -174,6 +182,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"View will appear (RootView)");
 
+//    UIImage *navBarImage = [UIImage imageNamed:@"navBar.png"];
+//    UINavigationBar *navBar = [self.navigationController navigationBar];
+//    [navBar setBackgroundImage:navBarImage forBarMetrics:UIBarMetricsDefault];
+//    
+    
     if (![UVNetworkUtils hasInternetAccess]) {
         UIImageView *serverErrorImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"uv_error_connection.png"]];
         self.navigationController.navigationBarHidden = NO;

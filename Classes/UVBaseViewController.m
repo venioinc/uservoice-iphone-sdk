@@ -18,6 +18,7 @@
 #import "NSError+UVExtras.h"
 #import "UVImageCache.h"
 #import "UserVoice.h"
+#import "VenioActivityView.h"
 #import "UVSignInViewController.h"
 
 @implementation UVBaseViewController
@@ -58,23 +59,27 @@
 }
 
 - (void)showActivityIndicatorWithText: (NSString *)text {
-    if (!self.activityIndicator) {
-        self.activityIndicator = [UVActivityIndicator activityIndicatorWithText:text];
-    }
-
-    [self.activityIndicator show];
+//    if (!self.activityIndicator) {
+//        self.activityIndicator = [UVActivityIndicator activityIndicatorWithText:text];
+//    }
+//
+//    [self.activityIndicator show];
+    [VenioActivityView activityViewForView:self.view];
 }
 
 - (void)showActivityIndicator {
-    if (!self.activityIndicator) {
-        self.activityIndicator = [UVActivityIndicator activityIndicator];
-    }
+//    if (!self.activityIndicator) {
+//        self.activityIndicator = [UVActivityIndicator activityIndicator];
+//    }
+//
+//    [self.activityIndicator show];
+    [VenioActivityView activityViewForView:self.view];
 
-    [self.activityIndicator show];
 }
 
 - (void)hideActivityIndicator {
-    [self.activityIndicator hide];
+//    [self.activityIndicator hide];
+    [VenioActivityView removeViewAnimated:YES];
 }
 
 - (void)setVoteLabelTextAndColorForVotesRemaining:(NSInteger)votesRemaining label:(UILabel *)label {
@@ -146,21 +151,21 @@
 - (void)initNavigationItem {
     self.navigationItem.title = NSLocalizedStringFromTable(@"Feedback", @"UserVoice", nil);
 
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
-                                   initWithTitle:[self backButtonTitle]
-                                   style:UIBarButtonItemStylePlain
-                                   target:nil
-                                   action:nil];
-    self.navigationItem.backBarButtonItem = backButton;
-    [backButton release];
+//    UIBarButtonItem *backButton = [[UIBarButtonItem alloc]
+//                                   initWithTitle:[self backButtonTitle]
+//                                   style:UIBarButtonItemStylePlain
+//                                   target:nil
+//                                   action:nil];
+//    self.navigationItem.backBarButtonItem = backButton;
+//    [backButton release];
 
-    if ([UVSession currentSession].isModal) {
-        self.exitButton = [[[UIBarButtonItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Close", @"UserVoice", nil)
-                                                            style:UIBarButtonItemStylePlain
-                                                           target:self
-                                                           action:@selector(dismissUserVoice)] autorelease];
-        self.navigationItem.rightBarButtonItem = exitButton;
-    }
+//    if ([UVSession currentSession].isModal) {
+//        self.exitButton = [[[UIBarButtonItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Close", @"UserVoice", nil)
+//                                                            style:UIBarButtonItemStylePlain
+//                                                           target:self
+//                                                           action:@selector(dismissUserVoice)] autorelease];
+//        self.navigationItem.rightBarButtonItem = exitButton;
+//    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -251,7 +256,7 @@
 }
 
 - (void)hideExitButton {
-    self.navigationItem.rightBarButtonItem = nil;
+//    self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)showExitButton {
