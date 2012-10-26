@@ -128,11 +128,12 @@
     [UVSession currentSession].user.votesRemaining = theSuggestion.votesRemaining;
 
     // Back out to the welcome screen
-    NSMutableArray *viewControllers = [[self.navigationController.viewControllers mutableCopy] autorelease];
-    [viewControllers removeLastObject];
-    if ([viewControllers count] > 2)
-        [viewControllers removeLastObject];
-    [self.navigationController setViewControllers:viewControllers animated:YES];
+//    NSMutableArray *viewControllers = [[self.navigationController.viewControllers mutableCopy] autorelease];
+//    [viewControllers removeLastObject];
+//    if ([viewControllers count] > 2)
+//        [viewControllers removeLastObject];
+//    [self.navigationController setViewControllers:viewControllers animated:YES];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)didDiscoverUser:(UVUser *)theUser {
