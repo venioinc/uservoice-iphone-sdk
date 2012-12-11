@@ -45,62 +45,16 @@
     [UVSession currentSession].clientConfig = model;
 }
 
-+ (CGFloat)getScreenWidth
-{
-    CGRect appFrame = [[UIScreen mainScreen] bounds];
-
-    CGFloat screenWidth;
-    if (([UIApplication sharedApplication].statusBarOrientation == UIDeviceOrientationLandscapeLeft) || ([UIApplication sharedApplication].statusBarOrientation == UIDeviceOrientationLandscapeRight))
-    {
-        screenWidth = appFrame.size.height;
-    }
-    else
-    {
-        screenWidth = appFrame.size.width;
-    }
-
-    return screenWidth;
++ (CGFloat)getScreenWidth {
+  id appDelegate = (id)UIApplication.sharedApplication.delegate;
+  UIViewController *root = [appDelegate window].rootViewController;
+  return root.presentedViewController.view.bounds.size.width;
 }
 
-+ (CGFloat)getScreenHeight
-{
-    CGRect appFrame = [[UIScreen mainScreen] bounds];
-    CGFloat screenHeight;
-    if (([UIApplication sharedApplication].statusBarOrientation == UIDeviceOrientationLandscapeLeft) || ([UIApplication sharedApplication].statusBarOrientation == UIDeviceOrientationLandscapeRight))
-    {
-        screenHeight = appFrame.size.width;
-    }
-    else
-    {
-        screenHeight = appFrame.size.height;
-    }
-
-    return screenHeight;
-}
-
-// Methods to store initial launch orientation of UserVoice (and then use that orientation until UserVoice is dismissed again)
-// The UVBaseViewController class uses getOrientation: to determine the allowed orientation, and therefore all the controllers inherit this
-+ (UIInterfaceOrientation)getOrientation
-{
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    int orientation = [userDefaults integerForKey:@"UVOrientation"];
-
-    if (orientation)
-    {
-        return (UIInterfaceOrientation)orientation;
-    }
-    else
-    {
-        return UIInterfaceOrientationPortrait;
-    }
-}
-
-+ (void)setOrientation
-{
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    int orientation = (int)[UIApplication sharedApplication].statusBarOrientation;
-
-    [userDefaults setInteger:orientation forKey:@"UVOrientation"];
++ (CGFloat)getScreenHeight {
+  id appDelegate = (id)UIApplication.sharedApplication.delegate;
+  UIViewController *root = [appDelegate window].rootViewController;
+  return root.presentedViewController.view.bounds.size.height;
 }
 
 - (id)initWithDictionary:(NSDictionary *)dict {

@@ -8,7 +8,7 @@
 
 #import "UVResponseDelegate.h"
 #import "UVBaseModel.h"
-#import "UVToken.h"
+#import "UVAccessToken.h"
 #import "UVSession.h"
 #import "UVCustomField.h"
 
@@ -57,14 +57,12 @@
             NSArray *nodes = [mutableResource allKeys];
             if ([nodes count] > 1) {
                 // aggregate returned
-                NSLog(@"Aggregate %@", nodes);
-
                 // also check for any tokens returned and set a current on session
                 // we will not persist them here though leave that to the calling controller
                 // only really useful for user creation and this SUCKS, refactor
                 NSDictionary *token = [mutableResource objectForKey:@"token"];
                 [mutableResource removeObjectForKey:@"token"];
-                [UVSession currentSession].currentToken = [[[UVToken alloc] initWithDictionary:token] autorelease];
+                [UVSession currentSession].accessToken = [[[UVAccessToken alloc] initWithDictionary:token] autorelease];
             }
             // reload keys
             nodes = [mutableResource allKeys];

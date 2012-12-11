@@ -1,6 +1,30 @@
 ## master ##
 
+* Fix a bug related to textview text overflowing cell bounds on iPad
+
+## 2.0.1 ##
+
+* Fix a bug related to feedback-only accounts
+* Add a method to directly launch the new idea screen
+
+## 2.0.0 ##
+
+* UI overhaul
+* Add knowledgebase browser
+* Add an option to specify a help topic
+* Add options to turn off different parts of the UI
+
+## 1.2.6 ##
+
+* Fix missing submit button on new ticket form on iPad
+
+## 1.2.5 ##
+
 * Fix a couple of bugs related to data not refreshing after sign-in
+* Add Dutch translation (thanks to nvh)
+* Add support for setting external_ids on the user, for integrations
+* Reload everything whenever the SDK is launched (previously we were caching data until the host app was unloaded)
+* Remove warning about unconfirmed email
 
 ## 1.2.4 ##
 
@@ -19,13 +43,13 @@
 * Show correct version number on about screen
 * Simplify loading sequence
 * Fix a bug with customizing the color of table view section headers
-* Add Traditional Chinese translation (thanks to @zetachang)
+* Add Traditional Chinese translation (thanks to zetachang)
 * Fix a bug where API calls were being made with malformed URLs
 
 ## 1.2.1 ##
 
 * Track instant answers for analytics
-* Add Italian translation (thanks to @Piero87)
+* Add Italian translation (thanks to Piero87)
 
 ## 1.2.0 ##
 

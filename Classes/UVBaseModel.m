@@ -10,7 +10,7 @@
 #import "UVBaseModel.h"
 #import "UVConfig.h"
 #import "UVSession.h"
-#import "UVToken.h"
+#import "UVAccessToken.h"
 #import "YOAuthToken.h"
 
 @implementation UVBaseModel
@@ -48,8 +48,8 @@
     YOAuthToken *token = nil;
 
     // only store access tokens
-    if ([UVToken exists]) {
-        token = [UVSession currentSession].currentToken.oauthToken;
+    if ([UVAccessToken exists]) {
+        token = [UVSession currentSession].accessToken.oauthToken;
     }
     NSURL *url = [NSURL URLWithString:path relativeToURL:[self baseURL]];
     YOAuthRequest *yReq = [[YOAuthRequest alloc] initWithConsumer:[[UVSession currentSession] yOAuthConsumer]
@@ -82,6 +82,17 @@
     return opts;
 }
 
++ (NSDictionary *)optionsForPath:(NSString *)path JSON:(NSDictionary *)payload method:(NSString *)method {
+    if (!payload) {
+        payload = [NSDictionary dictionary];
+    }
+    
+    NSMutableDictionary *headers = [self headersForPath:path params:@{} method:method];
+    [headers setObject:@"application/json" forKey:@"Content-Type"];
+    NSDictionary *opts = [NSDictionary dictionaryWithObjectsAndKeys:[payload JSONRepresentation], @"body", headers, @"headers", nil];
+    return opts;
+}
+
 + (NSInvocation *)invocationWithTarget:(id)target selector:(SEL)selector {
     NSMethodSignature *sig = [target methodSignatureForSelector:selector];
     NSInvocation *callback = [NSInvocation invocationWithMethodSignature:sig];
@@ -106,6 +117,12 @@
 + (id)putPath:(NSString *)path withParams:(NSDictionary *)params target:(id)target selector:(SEL)selector {
     NSInvocation *callback = [self invocationWithTarget:target selector:selector];
     NSDictionary *opts = [self optionsForPath:path params:params method:@"PUT"];
+    return [self putPath:path withOptions:opts object:callback];
+}
+
++ (id)putPath:(NSString *)path withJSON:(NSDictionary *)payload target:(id)target selector:(SEL)selector {
+    NSInvocation *callback = [self invocationWithTarget:target selector:selector];
+    NSDictionary *opts = [self optionsForPath:path JSON:payload method:@"PUT"];
     return [self putPath:path withOptions:opts object:callback];
 }
 
@@ -140,7 +157,7 @@
 }
 
 + (void)didReceiveError:(NSError *)error callback:(NSInvocation *)callback {
-    NSLog(@"[UVBaseModel didReceiveError]: %@", error);
+    NSLog(@"UserVoice SDK network error: %@", error);
     [callback.target performSelector:@selector(didReceiveError:) withObject:error];
 }
 
