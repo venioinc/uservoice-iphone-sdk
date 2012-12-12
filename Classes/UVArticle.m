@@ -26,8 +26,8 @@
     [self setBaseURL:[self siteURL]];
 }
 
-+ (id)getArticlesWithTopic:(UVHelpTopic *)topic delegate:(id)delegate {
-    NSString *path = [self apiPath:[NSString stringWithFormat:@"/topics/%d/articles.json", topic.topicId]];
++ (id)getArticlesWithTopicId:(int)topicId delegate:(id)delegate {
+    NSString *path = [self apiPath:[NSString stringWithFormat:@"/topics/%d/articles.json", topicId]];
     return [self getPath:path
               withParams:nil
                   target:delegate
@@ -50,7 +50,7 @@
     }];
 
     if ([UVSession currentSession].config.topicId)
-        params[@"topic_id"] = [NSString stringWithFormat:@"%d", [UVSession currentSession].config.topicId];
+        [params setObject:[NSString stringWithFormat:@"%d", [UVSession currentSession].config.topicId] forKey:@"topic_id"];
 
     return [self getPath:[self apiPath:@"/instant_answers/search.json"]
               withParams:params
@@ -59,7 +59,7 @@
 }
 
 + (UVBaseModel *)modelForDictionary:(NSDictionary *)dict {
-    if ([@"suggestion" isEqualToString:dict[@"type"]])
+    if ([@"suggestion" isEqualToString:[dict objectForKey:@"type"]])
         return [UVSuggestion modelForDictionary:dict];
     return [super modelForDictionary:dict];
 }

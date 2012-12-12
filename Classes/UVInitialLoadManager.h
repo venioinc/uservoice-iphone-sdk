@@ -12,10 +12,14 @@
     id delegate;
     SEL action;
     BOOL userDone;
-    BOOL kbDone;
+    BOOL topicsDone;
+    BOOL articlesDone;
     BOOL configDone;
+    BOOL dismissed;
 }
 
-+ (void)loadWithDelegate:(id)delegate action:(SEL)action;
++ (UVInitialLoadManager *)loadWithDelegate:(id)delegate action:(SEL)action;
+
+@property (assign) BOOL dismissed;
 
 @end
