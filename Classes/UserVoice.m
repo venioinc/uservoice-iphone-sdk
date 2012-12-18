@@ -95,7 +95,7 @@ static id<UVDelegate> userVoiceDelegate;
 }
 
 + (NSString *)version {
-    return @"2.0.1";
+    return @"2.0.2";
 }
 
 
