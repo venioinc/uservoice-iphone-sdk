@@ -11,6 +11,7 @@
 #import "UVTextView.h"
 #import "UVComment.h"
 #import "UVSuggestionDetailsViewController.h"
+#import "UVKeyboardUtils.h"
 
 @implementation UVCommentViewController
 
@@ -46,29 +47,15 @@
     [self dismiss];
 }
 
-- (void)updateLayout {
-    CGFloat sH = [UIScreen mainScreen].bounds.size.height;
-    CGFloat sW = [UIScreen mainScreen].bounds.size.width;
-    CGFloat kbP = 280;
-    CGFloat kbL = 214;
-
-    CGRect textViewRect = UIInterfaceOrientationIsLandscape(self.interfaceOrientation) ?
-        CGRectMake(0, 0, sH, sW - kbL) :
-        CGRectMake(0, 0, sW, sH - kbP);
-
-    [UIView animateWithDuration:0.3 animations:^{
-        self.textView.frame = textViewRect;
-    }];
-}
-
 - (void)loadView {
     [super loadView];
     self.navigationItem.title = suggestion.title;
     self.view = [[[UIView alloc] initWithFrame:[self contentFrame]] autorelease];
     self.view.backgroundColor = [UIColor whiteColor];
 
-    self.textView = [[[UVTextView alloc] initWithFrame:CGRectMake(0, 0, 320, [UIScreen mainScreen].bounds.size.height - 280)] autorelease];
+    self.textView = [[[UVTextView alloc] initWithFrame:self.view.bounds] autorelease];
     self.textView.placeholder = NSLocalizedStringFromTable(@"Write a comment...", @"UserVoice", nil);
+    self.textView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:textView];
 
     self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Cancel", @"UserVoice", nil)
@@ -83,8 +70,8 @@
     [self.textView becomeFirstResponder];
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
-    [self updateLayout];
+- (UIScrollView *)scrollView {
+    return self.textView;
 }
 
 - (void)dealloc {

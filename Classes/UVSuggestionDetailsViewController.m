@@ -123,12 +123,13 @@
     date.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
     [cell addSubview:date];
 
-    UILabel *text = [[[UILabel alloc] initWithFrame:CGRectMake(MARGIN + 50, MARGIN + 20, cell.bounds.size.width - MARGIN * 2 - 50, 100)] autorelease];
+    UILabel *text = [[[UILabel alloc] initWithFrame:CGRectMake(MARGIN + 50, MARGIN + 20, cell.bounds.size.width - MARGIN * 2 - 50, cell.bounds.size.height - MARGIN * 2 - 20)] autorelease];
     text.tag = COMMENT_TEXT_TAG;
     text.numberOfLines = 0;
     text.font = [UIFont systemFontOfSize:13];
     text.backgroundColor = [UIColor clearColor];
     text.textColor = [UIColor colorWithRed:0.41f green:0.42f blue:0.43f alpha:1.0f];
+    text.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     [cell addSubview:text];
 }
 
@@ -149,8 +150,6 @@
 
     UILabel *text = (UILabel *)[cell viewWithTag:COMMENT_TEXT_TAG];
     text.text = comment.text;
-    text.frame = CGRectMake(MARGIN + 50, MARGIN + 20, cell.bounds.size.width - MARGIN * 2 - 50, 100);
-    [text sizeToFit];
 }
 
 - (void)initCellForLoad:(UITableViewCell *)cell indexPath:(NSIndexPath *)indexPath {
@@ -217,7 +216,7 @@
 - (void)openVoteActionSheet {
     UIActionSheet *actionSheet = [[[UIActionSheet alloc] init] autorelease];
     int votesRemaining = [UVSession currentSession].user.votesRemaining;
-    actionSheet.title = [NSString stringWithFormat:@"%@\n(%@ %i %@)", NSLocalizedStringFromTable(@"How many votes would you like to use?", @"UserVoice", nil), NSLocalizedStringFromTable(@"You have", @"UserVoice", @"First part of \"You have 9 votes left\""), votesRemaining, NSLocalizedStringFromTable(@"votes left", @"UserVoice", @"Last part of \"You have 9 votes left\"")];
+    actionSheet.title = [NSString stringWithFormat:@"%@\n(%@)", NSLocalizedStringFromTable(@"How many votes would you like to use?", @"UserVoice", nil), [NSString stringWithFormat:NSLocalizedStringFromTable(@"You have %i votes left", @"UserVoice", nil), votesRemaining]];
     actionSheet.delegate = self;
     [actionSheet addButtonWithTitle:NSLocalizedStringFromTable(@"1 vote", @"UserVoice", nil)];
     [actionSheet addButtonWithTitle:NSLocalizedStringFromTable(@"2 votes", @"UserVoice", nil)];
@@ -265,12 +264,7 @@
 }
 
 - (void)presentCommentController {
-    UVCommentViewController *next = [[[UVCommentViewController alloc] initWithSuggestion:suggestion] autorelease];
-    UINavigationController *navigationController = [[[UINavigationController alloc] init] autorelease];
-    navigationController.navigationBar.tintColor = [UVStyleSheet navigationBarTintColor];
-    navigationController.viewControllers = @[next];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self presentModalViewController:navigationController animated:YES];
+    [self presentModalViewController:[[[UVCommentViewController alloc] initWithSuggestion:suggestion] autorelease]];
 }
 
 #pragma mark ===== Basic View Methods =====
@@ -327,7 +321,7 @@
     else if (suggestion.voteCount == 1)
         votesString = NSLocalizedStringFromTable(@"1 vote", @"UserVoice", nil);
     else
-        votesString = [NSString stringWithFormat:@"%@ %@", [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithInt:suggestion.voteCount] numberStyle:NSNumberFormatterDecimalStyle], NSLocalizedStringFromTable(@"votes", @"UserVoice", nil)];
+        votesString = [NSString stringWithFormat:NSLocalizedStringFromTable(@"%@ votes", @"UserVoice", nil), [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithInt:suggestion.voteCount] numberStyle:NSNumberFormatterDecimalStyle]];
 
     NSString *commentsString = nil;
     if (suggestion.commentsCount == 0)
@@ -335,7 +329,7 @@
     else if (suggestion.commentsCount == 1)
         commentsString = NSLocalizedStringFromTable(@"1 comment", @"UserVoice", nil);
     else
-        commentsString = [NSString stringWithFormat:@"%@ %@", [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithInt:suggestion.commentsCount] numberStyle:NSNumberFormatterDecimalStyle], NSLocalizedStringFromTable(@"comments", @"UserVoice", nil)];
+        commentsString = [NSString stringWithFormat:NSLocalizedStringFromTable(@"%@ comments", @"UserVoice", nil), [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithInt:suggestion.commentsCount] numberStyle:NSNumberFormatterDecimalStyle]];
 
     votesLabel.text = [NSString stringWithFormat:@"%@  •  %@", votesString, commentsString];
 
@@ -403,7 +397,7 @@
         label.shadowColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.3];
         label.shadowOffset = CGSizeMake(0, -1);
         label.font = [UIFont boldSystemFontOfSize:13];
-        label.text = [NSString stringWithFormat:@"%@ %@", NSLocalizedStringFromTable(@"Status:", @"UserVoice", nil), suggestion.status];
+        label.text = [NSString stringWithFormat:NSLocalizedStringFromTable(@"Status: %@", @"UserVoice", nil), suggestion.status];
         [statusBar addSubview:label];
         [scrollView addSubview:statusBar];
     }
@@ -434,7 +428,7 @@
     creatorLabel.backgroundColor = [UIColor clearColor];
     creatorLabel.textColor = [UIColor colorWithRed:0.41f green:0.42f blue:0.43f alpha:1.0f];
     creatorLabel.font = [UIFont systemFontOfSize:11];
-    creatorLabel.text = [NSString stringWithFormat:@"%@ %@ %@ %@", NSLocalizedStringFromTable(@"Posted by", @"UserVoice", nil), suggestion.creatorName, NSLocalizedStringFromTable(@"on", @"UserVoice", nil), [NSDateFormatter localizedStringFromDate:suggestion.createdAt dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterNoStyle]];
+    creatorLabel.text = [NSString stringWithFormat:NSLocalizedStringFromTable(@"Posted by %@ on %@", @"UserVoice", nil), suggestion.creatorName, [NSDateFormatter localizedStringFromDate:suggestion.createdAt dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterNoStyle]];
     [scrollView addSubview:creatorLabel];
 
     if (suggestion.responseText) {

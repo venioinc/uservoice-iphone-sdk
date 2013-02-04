@@ -48,10 +48,6 @@
     return self;
 }
 
-- (NSString *)backButtonTitle {
-    return NSLocalizedStringFromTable(@"Welcome", @"UserVoice", nil);
-}
-
 - (BOOL)showArticles {
     return [UVSession currentSession].config.topicId || [[UVSession currentSession].topics count] == 0;
 }
@@ -116,7 +112,7 @@
     } else if (theTableView == searchController.searchResultsTableView) {
         identifier = @"InstantAnswer";
     } else {
-        if (indexPath.section == 0)
+        if (indexPath.section == 0 && [UVSession currentSession].config.showForum)
             identifier = @"Forum";
         else if ([self showArticles])
             identifier = @"Article";
@@ -151,7 +147,7 @@
     } else if (theTableView == searchController.searchResultsTableView) {
         return [instantAnswers count];
     } else {
-        if (section == 0)
+        if (section == 0 && [UVSession currentSession].config.showForum)
             return 1;
         else if ([self showArticles])
             return [[UVSession currentSession].articles count];
@@ -169,7 +165,7 @@
         [self selectInstantAnswerAtIndex:indexPath.row];
     } else {
         [self clearFlash];
-        if (indexPath.section == 0) {
+        if (indexPath.section == 0 && [UVSession currentSession].config.showForum) {
             UVSuggestionListViewController *next = [[[UVSuggestionListViewController alloc] init] autorelease];
             [self.navigationController pushViewController:next animated:YES];
         } else if ([self showArticles]) {
@@ -187,7 +183,7 @@
 }
 
 - (NSString *)tableView:(UITableView *)theTableView titleForHeaderInSection:(NSInteger)section {
-    if (section == 0)
+    if (section == 0 && [UVSession currentSession].config.showForum)
         return nil;
     else if ([UVSession currentSession].config.topicId)
         return [((UVHelpTopic *)[[UVSession currentSession].topics objectAtIndex:0]) name];
@@ -197,22 +193,12 @@
 
 - (void)postIdeaTapped {
     [self clearFlash];
-    UIViewController *next = [UVNewSuggestionViewController viewController];
-    UINavigationController *navigationController = [[[UINavigationController alloc] init] autorelease];
-    navigationController.navigationBar.tintColor = [UVStyleSheet navigationBarTintColor];
-    navigationController.viewControllers = @[next];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self presentModalViewController:navigationController animated:YES];
+    [self presentModalViewController:[UVNewSuggestionViewController viewController]];
 }
 
 - (void)contactUsTapped {
     [self clearFlash];
-    UIViewController *next = [UVNewTicketViewController viewController];
-    UINavigationController *navigationController = [[[UINavigationController alloc] init] autorelease];
-    navigationController.navigationBar.tintColor = [UVStyleSheet navigationBarTintColor];
-    navigationController.viewControllers = @[next];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self presentModalViewController:navigationController animated:YES];
+    [self presentModalViewController:[UVNewTicketViewController viewController]];
 }
 
 - (void)logoTapped {
@@ -230,11 +216,13 @@
     searchController.searchResultsTableView.separatorColor = [UIColor colorWithRed:0.80f green:0.80f blue:0.80f alpha:1.0f];
     [searchBar setShowsCancelButton:YES animated:YES];
     filter = IA_FILTER_ALL;
+    searchBar.showsScopeBar = YES;
     searchBar.selectedScopeButtonIndex = 0;
     return YES;
 }
 
 - (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller {
+    controller.searchBar.showsScopeBar = NO;
     [self updateLayoutAnimated:YES];
 }
 
@@ -318,8 +306,8 @@
         searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         searchBar.placeholder = NSLocalizedStringFromTable(@"Search", @"UserVoice", nil);
         searchBar.delegate = self;
+        searchBar.showsScopeBar = NO;
         if ([UVSession currentSession].config.showForum) {
-            searchBar.showsScopeBar = YES;
             searchBar.scopeButtonTitles = @[NSLocalizedStringFromTable(@"All", @"UserVoice", nil), NSLocalizedStringFromTable(@"Articles", @"UserVoice", nil), NSLocalizedStringFromTable(@"Ideas", @"UserVoice", nil)];
         }
         UIView *border = [[[UIView alloc] initWithFrame:CGRectMake(0, searchBar.bounds.size.height, searchBar.bounds.size.width, 1)] autorelease];
@@ -386,6 +374,32 @@
     self.tableView.backgroundView = nil;
     self.tableView.backgroundColor = [UIColor clearColor];
     [scrollView addSubview:tableView];
+
+    if (![UVSession currentSession].clientConfig.whiteLabel) {
+        UIView *footer = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width, 50)] autorelease];
+        footer.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        UIView *logo = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+        UILabel *poweredBy = [[[UILabel alloc] initWithFrame:CGRectMake(0, 6, 0, 0)] autorelease];
+        // tweak for retina
+        if ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
+            poweredBy.frame = CGRectMake(0, 8, 0, 0);
+        poweredBy.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        poweredBy.backgroundColor = [UIColor clearColor];
+        poweredBy.textColor = [UIColor grayColor];
+        poweredBy.font = [UIFont systemFontOfSize:11];
+        poweredBy.text = NSLocalizedStringFromTable(@"powered by", @"UserVoice", nil);
+        [poweredBy sizeToFit];
+        [logo addSubview:poweredBy];
+        UIImageView *image = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"uv_logo.png"]] autorelease];
+        image.frame = CGRectMake(poweredBy.bounds.size.width + 7, 0, image.bounds.size.width * 0.8, image.bounds.size.height * 0.8);
+        [logo addSubview:image];
+        logo.frame = CGRectMake(0, 0, image.frame.origin.x + image.frame.size.width, image.frame.size.height);
+        logo.center = CGPointMake(footer.bounds.size.width / 2, footer.bounds.size.height - logo.bounds.size.height / 2 - 15);
+        logo.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleTopMargin;
+        [logo addGestureRecognizer:[[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logoTapped)] autorelease]];
+        [footer addSubview:logo];
+        tableView.tableFooterView = footer;
+    }
 
     [tableView reloadData];
     [self updateLayout];

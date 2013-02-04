@@ -1,5 +1,39 @@
 ## master ##
 
+## 2.0.7 ##
+
+* Fix some compatibility issues with iOS 4.3
+* Change 'Connecting to UserVoice' to 'Loading...' for since that message is displayed before we know if the account is white-label or not
+* Stop assuming that the app delegate responds to `window`
+
+## 2.0.6 ##
+
+* Fix a bug where kb browser would not work if forum was turned off
+
+## 2.0.5 ##
+
+* Fix a bug with scroll behavior on contact form
+* Only show topics that have articles
+* Fix a bug related to loading a single topic
+* Hide UserVoice logo for white label accounts
+
+## 2.0.4 ##
+
+* Fix a bug introduced in 2.0.3 where dismissing a form on the iPhone resulted in a blank screen
+* Fix a bug where the selected category was not displayed on the idea form
+
+## 2.0.3 ##
+
+* Fix a bug related to scroll insets not being set initially on form views on iPad
+* Tweak forms for bluetooth keyboards
+* Fix a bug related to nested modals on iPad
+* Fix an infinite loop in UVTruncatingLabel
+* Fix a bug related to sizing of comment text labels
+* Fix a bug with the layout of the comment form
+* Update Dutch translation (thanks @nvh)
+
+## 2.0.2 ##
+
 * Fix a bug related to textview text overflowing cell bounds on iPad
 * Fix a bug causing crashes on iOS 5
 * Add combined search to portal screen

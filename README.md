@@ -8,7 +8,7 @@ UserVoice for iOS allows you to embed UserVoice directly in your iPhone or iPad 
 You will need to have a UserVoice account (free) for it to connect to. Go to [uservoice.com/ios](http://uservoice.com/ios) to sign up.
 
 Binary builds of the SDK are available for download.
-* Current release: [2.0.1](https://github.com/downloads/uservoice/uservoice-iphone-sdk/UserVoiceSDK-2.0.1.tar.gz)
+* Current release: [2.0.7](https://github.com/uservoice/uservoice-iphone-sdk/raw/master/dist/UserVoiceSDK-2.0.7.tar.gz)
 
 We also have an [example app](https://github.com/uservoice/uservoice-iphone-example) on GitHub that demonstrates how to build and integrate the SDK.
 
@@ -17,6 +17,7 @@ Installation
 
 * Download the latest build.
 * Drag `UVHeaders`, `UVResources`, and `libUserVoice.a` into your project.
+  * When adding the folders, make sure you have "Create groups for any added folders" selected rather than "Create folder references for any added folders".
 * Note that the `.h` files in  `UVHeaders` do not need to be added to your target.
 * Add QuartzCore and SystemConfiguration frameworks to your project.
 * Add `-ObjC` to `Other Linker Flags` in the Build Settings for your target. (There is also an `Other Linker Flags` setting for your entire project, but that's not the one you want.)
@@ -38,7 +39,7 @@ Once you have completed these steps, you are ready to launch the UserVoice UI
 from your code. Import `UserVoice.h` and create a `UVConfig` using one of the
 following options.
 
-#### Configuration
+### Configuration
 
 **1. Standard Login:** This is the most basic option, which will allow users to
 either sign in, or create a UserVoice account, from inside the UserVoice UI.
@@ -122,7 +123,7 @@ anywhere in the UserVoice UI.
 
 There are 4 options for how to launch UserVoice from within your app:
 
-**1. Standard UserVoice Interface:** This launches the UserVoice for iOS portal page where the user can browse suggestions, contact you or browse the knowledgebase. This is the full experience of everything the SDK can do:
+**1. Standard UserVoice Interface:** This launches the UserVoice for iOS portal page where the user can browse suggestions, contact you or browse the knowledgebase. This is the full experience of everything the SDK can do.
     
     [UserVoice presentUserVoiceInterfaceForParentViewController:self andConfig:config];
 
@@ -216,7 +217,7 @@ If you want to go the extra mile and test your translations, do the following:
   * `mkdir Resources/YOURLOCALE.lproj`
   * `touch Resources/YOURLOCALE.lproj/UserVoice.strings`
 * Install the `twine` gem
-* Run `./strings.sh` to generate the strings files
+* Run `./update_strings.sh` to generate the strings files
 * Run the example app (or your own app) to see how things look in the UI
 * Make note of any layout issues in your pull request so that we can look at it
   and figure out what to do.

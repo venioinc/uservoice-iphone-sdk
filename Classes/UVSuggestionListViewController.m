@@ -123,7 +123,8 @@
 
     UIBarButtonItem *compose = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(composeButtonTapped)] autorelease];
     compose.style = UIBarButtonItemStyleBordered;
-    compose.tintColor = [UIColor colorWithRed:0.24f green:0.51f blue:0.95f alpha:1.0f];
+    if ([compose respondsToSelector:@selector(setTintColor:)])
+        compose.tintColor = [UIColor colorWithRed:0.24f green:0.51f blue:0.95f alpha:1.0f];
     UINavigationItem *navItem = [[[UINavigationItem alloc] initWithTitle:nil] autorelease];
     navItem.rightBarButtonItem = compose;
     toolbar.items = @[navItem];
@@ -226,12 +227,7 @@
 }
 
 - (void)composeButtonTapped {
-    UIViewController *next = [UVNewSuggestionViewController viewControllerWithTitle:self.searchController.searchBar.text];
-    UINavigationController *navigationController = [[[UINavigationController alloc] init] autorelease];
-    navigationController.navigationBar.tintColor = [UVStyleSheet navigationBarTintColor];
-    navigationController.viewControllers = @[next];
-    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self presentModalViewController:navigationController animated:YES];
+    [self presentModalViewController:[UVNewSuggestionViewController viewControllerWithTitle:self.searchController.searchBar.text]];
 }
 
 - (void)tableView:(UITableView *)theTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -324,7 +320,8 @@
         self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
                                                                                                 target:self
                                                                                                 action:@selector(composeButtonTapped)] autorelease];
-        self.navigationItem.rightBarButtonItem.tintColor = [UIColor colorWithRed:0.24f green:0.51f blue:0.95f alpha:1.0f];
+        if ([self.navigationItem.rightBarButtonItem respondsToSelector:@selector(setTintColor:)])
+            self.navigationItem.rightBarButtonItem.tintColor = [UIColor colorWithRed:0.24f green:0.51f blue:0.95f alpha:1.0f];
     }
 
     if ([UVSession currentSession].isModal && firstController) {

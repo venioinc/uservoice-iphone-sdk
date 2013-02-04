@@ -53,13 +53,13 @@
         transition.type = kCATransitionFade;
         [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
         UVBaseViewController *next = nil;
-        if (self.viewToLoad == @"welcome")
+        if ([self.viewToLoad isEqualToString:@"welcome"])
             next = [[[UVWelcomeViewController alloc] init] autorelease];
-        else if (self.viewToLoad == @"suggestions")
+        else if ([self.viewToLoad isEqualToString:@"suggestions"])
             next = [[[UVSuggestionListViewController alloc] init] autorelease];
-        else if (self.viewToLoad == @"new_suggestion")
+        else if ([self.viewToLoad isEqualToString:@"new_suggestion"])
             next = [UVNewSuggestionViewController viewController];
-        else if (self.viewToLoad == @"new_ticket")
+        else if ([self.viewToLoad isEqualToString:@"new_ticket"])
             next = [UVNewTicketViewController viewController];
 
         next.firstController = YES;
@@ -99,7 +99,7 @@
     label.font = [UIFont systemFontOfSize:15];
     label.textColor = [UIColor darkGrayColor];
     label.textAlignment = UITextAlignmentCenter;
-    label.text = NSLocalizedStringFromTable(@"Connecting to UserVoice", @"UserVoice", nil);
+    label.text = NSLocalizedStringFromTable(@"Loading...", @"UserVoice", nil);
     [label sizeToFit];
     label.center = CGPointMake(loading.bounds.size.width/2, 85);
     [loading addSubview:label];

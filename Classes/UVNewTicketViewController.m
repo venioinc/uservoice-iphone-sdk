@@ -109,8 +109,8 @@
     [self addTopBorder:fieldsTableView];
     [self.view addSubview:fieldsTableView];
 
-    self.nextButton = [self barButtonItem:@"Continue" withAction:@selector(nextButtonTapped)];
-    self.sendButton = [self barButtonItem:@"Send" withAction:@selector(sendButtonTapped)];
+    self.nextButton = [self barButtonItem:NSLocalizedStringFromTable(@"Continue", @"UserVoice", nil) withAction:@selector(nextButtonTapped)];
+    self.sendButton = [self barButtonItem:NSLocalizedStringFromTable(@"Send", @"UserVoice", nil) withAction:@selector(sendButtonTapped)];
     self.sendButton.style = UIBarButtonItemStyleDone;
 
     state = STATE_BEGIN;
@@ -131,7 +131,7 @@
         else
             state = STATE_FIELDS;
     } else if (state == STATE_IA) {
-        state = STATE_SHOW_IA;
+        state = [UVKeyboardUtils visible] ? STATE_SHOW_IA : STATE_FIELDS_IA;
     } else if (state == STATE_SHOW_IA) {
         state = STATE_FIELDS_IA;
     }
@@ -168,13 +168,12 @@
     [self updateLayout];
 }
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
     CGPoint offset = [textField convertPoint:CGPointZero toView:scrollView];
     offset.x = 0;
     offset.y -= 20;
     offset.y = MIN(offset.y, MAX(0, scrollView.contentSize.height + [UVKeyboardUtils height] - scrollView.bounds.size.height));
     [scrollView setContentOffset:offset animated:YES];
-    return YES;
 }
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
@@ -194,7 +193,7 @@
 - (void)instantAnswersMessageTapped {
     switch (state) {
     case STATE_IA:
-        state = STATE_SHOW_IA;
+        state = [UVKeyboardUtils visible] ? STATE_SHOW_IA : STATE_FIELDS_IA;
         break;
     case STATE_SHOW_IA:
         state = STATE_FIELDS_IA;
@@ -303,6 +302,9 @@
     CGPoint instantAnswersOrigin = CGPointMake(0, textViewRect.size.height);
     CGPoint fieldsTableOrigin = CGPointMake(0, showFieldsTable ? instantAnswersOrigin.y + (showIAMessage ? 40 : 0) : sH);
 
+    if (state == STATE_BEGIN && ![UVKeyboardUtils visible])
+        instantAnswersOrigin.y = sH;
+
     instantAnswersView.hidden = !showIAMessage;
     if (showIATable)
         instantAnswersTableView.hidden = NO;
@@ -323,7 +325,7 @@
 
     scrollView.contentSize = CGSizeMake(scrollView.bounds.size.width, textViewRect.size.height + (showIAMessage ? 40 : 0) + (showIATable ? instantAnswersTableView.contentSize.height : 0) + (showFieldsTable ? fieldsTableView.contentSize.height : 0));
 
-    [self updateSpinnerAndXIn:instantAnswersMessage withToggle:(state == STATE_SHOW_IA) animated:YES];
+    [self updateSpinnerAndXIn:instantAnswersMessage withToggle:(state == STATE_SHOW_IA || (state == STATE_IA && ![UVKeyboardUtils visible])) animated:YES];
     [UIView animateWithDuration:0.3 animations:^{
         messageTextView.frame = textViewRect;
         instantAnswersView.frame = CGRectMake(instantAnswersOrigin.x, instantAnswersOrigin.y, textViewRect.size.width, instantAnswersTableView.frame.origin.y + instantAnswersTableView.frame.size.height);

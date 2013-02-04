@@ -201,6 +201,9 @@
     CGPoint instantAnswersOrigin = CGPointMake(0, textViewRect.origin.y + textViewRect.size.height);
     CGPoint fieldsTableViewOrigin = CGPointMake(0, showFieldsTable ? instantAnswersOrigin.y + (showIAMessage ? 40 : 0) : sH);
 
+    if (state == STATE_BEGIN && ![UVKeyboardUtils visible])
+        instantAnswersOrigin.y = sH;
+
     instantAnswersView.hidden = !showIAMessage;
     if (showIATable)
         instantAnswersTableView.hidden = NO;
@@ -221,7 +224,7 @@
 
     scrollView.contentSize = CGSizeMake(scrollView.bounds.size.width, textViewRect.origin.y + textViewRect.size.height + (showIAMessage ? 40 : 0) + (showIATable ? instantAnswersTableView.contentSize.height : 0) + (showFieldsTable ? fieldsTableView.contentSize.height : 0));
 
-    [self updateSpinnerAndXIn:instantAnswersMessage withToggle:(state == STATE_SHOW_IA) animated:YES];
+    [self updateSpinnerAndXIn:instantAnswersMessage withToggle:(state == STATE_SHOW_IA || (state == STATE_IA && ![UVKeyboardUtils visible])) animated:YES];
     [UIView animateWithDuration:0.3 animations:^{
         textView.frame = textViewRect;
         instantAnswersView.frame = CGRectMake(instantAnswersOrigin.x, instantAnswersOrigin.y, textViewRect.size.width, instantAnswersTableView.frame.origin.y + instantAnswersTableView.frame.size.height);
@@ -332,8 +335,8 @@
     [fieldsTableView reloadData];
     scrollView.contentSize = CGSizeMake(scrollView.bounds.size.width, titleView.bounds.size.height + textView.bounds.size.height + fieldsTableView.contentSize.height);
 
-    self.nextButton = [self barButtonItem:@"Continue" withAction:@selector(nextButtonTapped)];
-    self.sendButton = [self barButtonItem:@"Submit" withAction:@selector(createButtonTapped)];
+    self.nextButton = [self barButtonItem:NSLocalizedStringFromTable(@"Continue", @"UserVoice", nil) withAction:@selector(nextButtonTapped)];
+    self.sendButton = [self barButtonItem:NSLocalizedStringFromTable(@"Submit", @"UserVoice", nil) withAction:@selector(createButtonTapped)];
     self.sendButton.style = UIBarButtonItemStyleDone;
 
     state = STATE_BEGIN;
@@ -344,6 +347,10 @@
         [self loadInstantAnswers];
     }
     [titleField becomeFirstResponder];
+}
+
+- (void)reloadCategoryTable {
+    [fieldsTableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -361,7 +368,7 @@
         else
             state = STATE_FIELDS;
     } else if (state == STATE_IA) {
-        state = STATE_SHOW_IA;
+        state = [UVKeyboardUtils visible] ? STATE_SHOW_IA : STATE_FIELDS_IA;
     } else if (state == STATE_SHOW_IA) {
         state = STATE_FIELDS_IA;
     }
@@ -387,7 +394,7 @@
 - (void)instantAnswersMessageTapped {
     switch (state) {
     case STATE_IA:
-        state = STATE_SHOW_IA;
+        state = [UVKeyboardUtils visible] ? STATE_SHOW_IA : STATE_FIELDS_IA;
         break;
     case STATE_SHOW_IA:
         state = STATE_FIELDS_IA;
